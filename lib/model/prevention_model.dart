@@ -1,21 +1,14 @@
-class PreventionModel {
-  final int idPrevention;
+class Prevention {
+  final int id;
   final String description;
 
-  PreventionModel({
-    required this.idPrevention,
+  Prevention({
+    required this.id,
     required this.description,
   });
 
-  factory PreventionModel.fromJson(Map<String, dynamic> json) {
-    return PreventionModel(
-      idPrevention: json['id_prevention'],
-      description: json['description'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id_prevention': idPrevention,
-        'description': description,
-      };
+  factory Prevention.fromJson(Map<String, dynamic> json) => Prevention(
+    id: int.parse(json['id_prevention']),
+    description: json['description'],
+  );
 }

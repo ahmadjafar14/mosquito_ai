@@ -1,25 +1,17 @@
-class ScanAttachmentModel {
-  final int idAttachment;
+class ScanAttachment {
+  final int id;
   final String name;
   final int idGenus;
 
-  ScanAttachmentModel({
-    required this.idAttachment,
+  ScanAttachment({
+    required this.id,
     required this.name,
     required this.idGenus,
   });
 
-  factory ScanAttachmentModel.fromJson(Map<String, dynamic> json) {
-    return ScanAttachmentModel(
-      idAttachment: json['id_attachment'],
-      name: json['name'],
-      idGenus: json['id_genus'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id_attachment': idAttachment,
-        'name': name,
-        'id_genus': idGenus,
-      };
+  factory ScanAttachment.fromJson(Map<String, dynamic> json) => ScanAttachment(
+    id: int.parse(json['id_attachment']),
+    name: json['name'],
+    idGenus: int.parse(json['id_genus']),
+  );
 }

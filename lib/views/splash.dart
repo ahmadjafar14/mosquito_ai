@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
         print("🟢 Navigating to HomePage");
         Navigator.of(
           context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => HomePage()));
+        ).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
       });
     });
   }

@@ -1,21 +1,14 @@
-class DiseaseModel {
-  final int idDisease;
+class Disease {
+  final int id;
   final String description;
 
-  DiseaseModel({
-    required this.idDisease,
+  Disease({
+    required this.id,
     required this.description,
   });
 
-  factory DiseaseModel.fromJson(Map<String, dynamic> json) {
-    return DiseaseModel(
-      idDisease: json['id_disease'],
-      description: json['description'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id_disease': idDisease,
-        'description': description,
-      };
+  factory Disease.fromJson(Map<String, dynamic> json) => Disease(
+    id: int.parse(json['id_disease']),
+    description: json['description'],
+  );
 }

@@ -1,29 +1,20 @@
-class UserModel {
-  final int idUser;
+class User {
+  final int id;
+  final String username;
   final String name;
-  final String password;
   final String numberPhone;
 
-  UserModel({
-    required this.idUser,
+  User({
+    required this.id,
+    required this.username,
     required this.name,
-    required this.password,
     required this.numberPhone,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      idUser: json['id_user'],
-      name: json['name'],
-      password: json['password'],
-      numberPhone: json['number_phone'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id_user': idUser,
-        'name': name,
-        'password': password,
-        'number_phone': numberPhone,
-      };
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json['id_user'],
+        username: json['username'],
+        name: json['name'],
+        numberPhone: json['number_phone'], // ✅ perhatikan: "number_phone" bukan "numberPhone"
+      );
 }
