@@ -15,6 +15,6 @@ class User {
         id: json['id_user'],
         username: json['username'],
         name: json['name'],
-        numberPhone: json['number_phone'], // ✅ perhatikan: "number_phone" bukan "numberPhone"
+        numberPhone: json['number_phone'], 
       );
 }

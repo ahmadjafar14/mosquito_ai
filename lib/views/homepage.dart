@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_mosquito_cam/model/home_model.dart';
 import 'package:smart_mosquito_cam/views/auth/loginpage.dart';
 import 'package:smart_mosquito_cam/views/auth/profilepage.dart';
@@ -31,39 +32,51 @@ class HomePage extends StatelessWidget {
               height: 120,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.centerLeft,
-              child: Row(
-                children: const [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/img/1w.png'),
-                  ),
-                  SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+              child: FutureBuilder(
+                future: SharedPreferences.getInstance(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
+                  }
+
+                  final prefs = snapshot.data!;
+                  final username = prefs.getString('username') ?? 'User';
+
+                  return Row(
                     children: [
-                      Text(
-                        'Far Gamer',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+                      const CircleAvatar(
+                        radius: 30,
+                        backgroundImage: AssetImage('assets/img/1w.png'),
                       ),
-                      Text(
-                        'gamerfar17@gmail.com',
-                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            username,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  );
+                },
               ),
             ),
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.person_2, color: Colors.white),
-              title: const Text('Profile',
-                  style: TextStyle(fontSize: 18, color: Colors.white)),
+              title: const Text(
+                'Profile',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
               onTap: () {
                 Navigator.push(
                   context,
@@ -86,7 +99,44 @@ class HomePage extends StatelessWidget {
                 icon: const Icon(Icons.logout),
                 label: const Text("Logout"),
                 onPressed: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          title: const Text("Konfirmasi Logout"),
+                          content: const Text(
+                            "Apakah kamu yakin ingin keluar dari aplikasi?",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("Batal"),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.clear();
+                                Navigator.pop(context); // tutup dialog
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginPage(),
+                                  ),
+                                  (route) => false,
+                                );
+                              },
+                              child: const Text(
+                                "Keluar",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                  );
                 },
               ),
             ),
@@ -147,7 +197,8 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ScanHistoryPage()),
+                        builder: (context) => ScanHistoryPage(),
+                      ),
                     );
                   }),
                   _menuItem(Icons.menu_book, "Guide Book", () {
@@ -184,9 +235,10 @@ class HomePage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: scanStats
-                          .map((e) => _statItem(e.value, e.label))
-                          .toList(),
+                      children:
+                          scanStats
+                              .map((e) => _statItem(e.value, e.label))
+                              .toList(),
                     ),
                   ],
                 ),
@@ -197,11 +249,12 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              ...recentActivities.map((e) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _activityItem(
-                        e.icon, e.title, e.subtitle, e.color),
-                  )),
+              ...recentActivities.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _activityItem(e.icon, e.title, e.subtitle, e.color),
+                ),
+              ),
             ],
           ),
         ),

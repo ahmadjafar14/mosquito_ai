@@ -16,69 +16,67 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   bool isLoading = false;
 
-  void handleLogin() async {
-    setState(() => isLoading = true);
+void handleLogin() async {
+  setState(() => isLoading = true);
 
-    final user = await ApiService.login(
-      usernameController.text.trim(),
-      passwordController.text.trim(),
+  final user = await ApiService.login(
+    usernameController.text.trim(),
+    passwordController.text.trim(),
+  );
+
+  setState(() => isLoading = false);
+
+  if (user != null) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt("user_id", user.id);
+    await prefs.setString("username", user.username);
+    await prefs.setString("name", user.name);
+    await prefs.setString("number_phone", user.numberPhone);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text("Berhasil Login"),
+        content: const Text("Selamat datang kembali!"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => HomePage()),
+              );
+            },
+            child: const Text("Lanjut"),
+          ),
+        ],
+      ),
     );
-
-    setState(() => isLoading = false);
-
-    if (user != null) {
-      // ✅ Simpan ID
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt("user_id", user.id);
-
-      // ✅ Tampilkan dialog sukses
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder:
-            (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              title: const Text("Berhasil Login 🎉"),
-              content: const Text("Selamat datang kembali!"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Tutup dialog
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => HomePage()),
-                    );
-                  },
-                  child: const Text("Lanjut"),
-                ),
-              ],
-            ),
-      );
-    } else {
-      // ❌ Tampilkan dialog gagal
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              title: const Text("Login Gagal ❌"),
-              content: const Text(
-                "Username atau password salah. Silakan coba lagi.",
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Tutup"),
-                ),
-              ],
-            ),
-      );
-    }
+  } else {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        title: const Text("Login Gagal ❌"),
+        content: const Text(
+          "Username atau password salah. Silakan coba lagi.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
